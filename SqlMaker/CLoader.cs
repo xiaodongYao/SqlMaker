@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Text;
 using System.Threading;
-using Excel;
+using ExcelDataReader;
 
-namespace sqlmake
+namespace SqlMaker
 {
     internal class CLoader
     {
@@ -14,11 +15,10 @@ namespace sqlmake
         {
             Console.WriteLine("LoadFromExcel start!");
             var ticks = DateTime.Now.Ticks;
-            string[] strFiles = Directory.GetFiles($"{cfgRootPath}/excel/", "*xlsx");
+            string[] strFiles = Directory.GetFiles($"{cfgRootPath}/excel/", "*.xlsx");
             LoadFlag[] lf = new LoadFlag[strFiles.Length];
             int c = 0;
-            string[] array = strFiles;
-            foreach (var strPath in array)
+            foreach (var strPath in strFiles)
             {
                 var i = new LoadFlag();
                 lf[c++] = i;
@@ -105,7 +105,8 @@ namespace sqlmake
         public static bool LoadExcel(string lpFilePath, bool excesql, LoadFlag lf)
         {
             FileStream stream = File.Open(lpFilePath, FileMode.Open, FileAccess.Read);
-            var excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+            ExcelReaderConfiguration cfg = new ExcelReaderConfiguration {FallbackEncoding = Encoding.UTF8};
+            var excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream,cfg);
             if (excelReader.Name == "Language")
             {
                 return true;
